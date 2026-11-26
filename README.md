@@ -9,7 +9,12 @@
 
 ## Стек
 
-- JavaScript
+- TypeScript
+- React
+- Mantine
+- Vite
+- Vitest, Testing Library
+- oxlint, oxfmt, ast-grep
 
 ## Установка
 
