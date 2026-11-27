@@ -16,15 +16,37 @@ const describeSource = (source: AccessSource, config: Config): string => {
 export const App = () => {
   const { config, checkAccess, grantPermission, revokePermission, exportJson, importJson } =
     useSimulator();
+  const [groupId, setGroupId] = useState("");
   const [userId, setUserId] = useState("");
   const [serviceId, setServiceId] = useState("");
 
   const result = userId && serviceId ? checkAccess(userId, serviceId) : null;
+  const visibleUsers =
+    groupId === "" ? config.users : config.users.filter((user) => user.groupIds.includes(groupId));
+
+  // Выбор «Все группы» сотрудника не трогает; выбор группы сбрасывает того, кто в неё не входит.
+  const selectGroup = (nextGroupId: string) => {
+    setGroupId(nextGroupId);
+    const selectedUser = config.users.find((user) => user.id === userId);
+    if (nextGroupId !== "" && !selectedUser?.groupIds.includes(nextGroupId)) {
+      setUserId("");
+    }
+  };
 
   return (
     <Container size="sm" py="xl">
       <Stack gap="md">
         <Title order={1}>Симулятор политик доступа</Title>
+        <NativeSelect
+          label="Группа"
+          data-testid="group-filter"
+          value={groupId}
+          onChange={(event) => selectGroup(event.currentTarget.value)}
+          data={[
+            { value: "", label: "Все группы" },
+            ...config.groups.map((group) => ({ value: group.id, label: group.name })),
+          ]}
+        />
         <NativeSelect
           label="Сотрудник"
           data-testid="user-select"
@@ -32,7 +54,7 @@ export const App = () => {
           onChange={(event) => setUserId(event.currentTarget.value)}
           data={[
             { value: "", label: "Не выбран" },
-            ...config.users.map((user) => ({ value: user.id, label: user.name })),
+            ...visibleUsers.map((user) => ({ value: user.id, label: user.name })),
           ]}
         />
         <NativeSelect
