@@ -1,0 +1,27 @@
+# docs/security-requirements.md, п. 1: конфигурация остаётся в браузере.
+# В src нет обращений к fetch, XMLHttpRequest, navigator.sendBeacon и WebSocket.
+id: no-network-ts
+language: TypeScript
+severity: error
+message: "Сетевые запросы запрещены: данные конфигурации не покидают браузер"
+note: docs/security-requirements.md, «1. Конфигурация остаётся в браузере»
+files:
+  - src/**/*.ts
+rule:
+  any:
+    - kind: identifier
+    - kind: property_identifier
+  regex: ^(fetch|XMLHttpRequest|sendBeacon|WebSocket)$
+---
+id: no-network-tsx
+language: Tsx
+severity: error
+message: "Сетевые запросы запрещены: данные конфигурации не покидают браузер"
+note: docs/security-requirements.md, «1. Конфигурация остаётся в браузере»
+files:
+  - src/**/*.tsx
+rule:
+  any:
+    - kind: identifier
+    - kind: property_identifier
+  regex: ^(fetch|XMLHttpRequest|sendBeacon|WebSocket)$
