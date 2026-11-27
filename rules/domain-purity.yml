@@ -1,0 +1,25 @@
+# docs/architecture.md, «Момент расчёта передаётся в расчёт явно»:
+# в src/domain нет Date.now() и new Date() без аргументов.
+id: domain-no-clock
+language: TypeScript
+severity: error
+message: "Модуль расчёта не читает часы: момент приходит параметром at"
+note: docs/architecture.md, «Момент расчёта передаётся в расчёт явно»
+files:
+  - src/domain/**/*.ts
+rule:
+  any:
+    - pattern: Date.now()
+    - pattern: new Date()
+---
+# docs/architecture.md, «Каталоги»: src/domain — чистые функции без обращений к браузеру.
+id: domain-no-browser
+language: TypeScript
+severity: error
+message: "src/domain не обращается к браузеру: хранилище и окружение — дело слоя src/app"
+note: docs/architecture.md, «Каталоги»
+files:
+  - src/domain/**/*.ts
+rule:
+  kind: identifier
+  regex: ^(window|document|navigator|localStorage|sessionStorage)$

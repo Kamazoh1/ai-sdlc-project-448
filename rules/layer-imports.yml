@@ -1,0 +1,80 @@
+# docs/architecture.md: зависимости идут только сверху вниз,
+# src/components -> src/app -> src/domain.
+id: domain-imports-only-domain
+language: TypeScript
+severity: error
+message: "src/domain не импортирует слои выше (src/app, src/components)"
+note: docs/architecture.md, «Каталоги» и «Правила»
+files:
+  - src/domain/**/*.ts
+rule:
+  any:
+    - kind: import_statement
+    - kind: export_statement
+  has:
+    field: source
+    regex: \.\./(app|components)
+---
+id: app-no-components
+language: TypeScript
+severity: error
+message: "src/app не импортирует экраны из src/components"
+note: docs/architecture.md, «Каталоги» и «Правила»
+files:
+  - src/app/**/*.ts
+rule:
+  any:
+    - kind: import_statement
+    - kind: export_statement
+  has:
+    field: source
+    regex: \.\./components
+---
+# docs/architecture.md, «Компоненты обращаются к конфигурации только через слой приложения»
+# и «Где живут общие типы»: компоненты импортируют всё, включая типы, только из ../app.
+id: components-import-app-index
+language: Tsx
+severity: error
+message: "Компоненты импортируют только из ../app: ни src/domain, ни модули слоя приложения напрямую"
+note: docs/architecture.md, «Компоненты обращаются к конфигурации только через слой приложения»
+files:
+  - src/components/**/*.tsx
+ignores:
+  - src/components/**/*.test.tsx
+rule:
+  any:
+    - kind: import_statement
+    - kind: export_statement
+  has:
+    field: source
+    regex: \.\./(domain|app/)
+---
+# docs/architecture.md, «Тесты»: тестам компонентов можно брать из src/app seed,
+# STORAGE_KEY и функции формата файла, но не src/domain.
+id: component-tests-no-domain
+language: Tsx
+severity: error
+message: "Тесты компонентов не импортируют src/domain"
+note: docs/architecture.md, «Тесты»
+files:
+  - src/components/**/*.test.tsx
+rule:
+  kind: import_statement
+  has:
+    field: source
+    regex: \.\./domain
+---
+# docs/architecture.md, «Компоненты обращаются к конфигурации только через слой приложения»:
+# компонент не читает localStorage (тестам проверять хранилище можно).
+id: components-no-storage
+language: Tsx
+severity: error
+message: "Компоненты не обращаются к хранилищу браузера: конфигурация приходит из useSimulator"
+note: docs/architecture.md, «Компоненты обращаются к конфигурации только через слой приложения»
+files:
+  - src/components/**/*.tsx
+ignores:
+  - src/components/**/*.test.tsx
+rule:
+  kind: identifier
+  regex: ^(localStorage|sessionStorage)$

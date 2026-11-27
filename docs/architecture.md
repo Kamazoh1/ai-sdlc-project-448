@@ -36,4 +36,10 @@
 
 ## Проверки
 
-`make lint-arch` запускает ast-grep по `src` с правилами из каталога `rules`. В стартере каталог пуст, поэтому цель проходит. Свои правила студент добавляет туда файлами `rules/*.yml`.
+`make lint-arch` запускает ast-grep по `src` с правилами из каталога `rules`. Любое срабатывание завершает цель с ошибкой.
+
+| Файл | Что проверяет |
+| --- | --- |
+| `rules/layer-imports.yml` | Импорты идут только сверху вниз. Компоненты импортируют только `../app`, тесты компонентов — всё, кроме `src/domain`. Компоненты не обращаются к `localStorage` и `sessionStorage`. |
+| `rules/domain-purity.yml` | В `src/domain` нет `Date.now()`, `new Date()` без аргументов и обращений к `window`, `document`, `navigator` и хранилищам браузера. |
+| `rules/no-network.yml` | В `src` нет `fetch`, `XMLHttpRequest`, `sendBeacon` и `WebSocket` (п. 1 `docs/security-requirements.md`). |
